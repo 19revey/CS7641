@@ -28,7 +28,7 @@ class alien:
         return  df
         
     
-    def train(self,clf=SVC(kernel='linear'),ratio=0.1,modify_feature=False):
+    def dataset(self,ratio=0.2,modify_feature=False):
         df=self._read_data()
 
 
@@ -64,15 +64,15 @@ class alien:
         X = preprocessor.fit_transform(X)
 
         if modify_feature:
-            y = y.map({"M": 1, "F": 1, "I": 2 })
+            y = y.map({"M": 1, "F": 1, "I": 0 })
         else:
             y = y.map({"M": 0, "F": 1, "I": 2 })
 
         X_sample, _, y_sample, _ = train_test_split(X, y, test_size=ratio, random_state=32)
         X_train, X_test, y_train, y_test = train_test_split(X_sample, y_sample, test_size=0.2, random_state=10) 
         
-        clf.fit(X_train, y_train)
-        return clf, X_test, y_test,X_train, y_train
+        # clf.fit(X_train, y_train)
+        return X_test, y_test,X_train, y_train
 
     def evaluate(self,clf=SVC(kernel='linear'),ratio_range=np.linspace(0.1, 0.9, 4), modify_feature=False):
 
