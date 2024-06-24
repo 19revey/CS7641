@@ -27,7 +27,6 @@ class alien:
         self.data_size = len(df)
         return  df
         
-    
     def dataset(self,ratio=0.2,modify_feature=False):
         df=self._read_data()
 
@@ -64,15 +63,62 @@ class alien:
         X = preprocessor.fit_transform(X)
 
         if modify_feature:
-            y = y.map({"M": 1, "F": 1, "I": 0 })
+            y = y.map({"M": 0, "F": 0, "I": 1 })
+        else:
+            y = y.map({"M": 0, "F": 1, "I": 2 })
+
+        # X_sample, _, y_sample, _ = train_test_split(X, y, test_size=ratio, random_state=32)
+        # X_train, X_test, y_train, y_test = train_test_split(X_sample, y_sample, test_size=0.2, random_state=10) 
+        
+        
+        return  X,y
+
+
+    def train(self,clf=SVC(kernel='linear'),ratio=0.2,modify_feature=False):
+        df=self._read_data()
+
+
+
+        X=df.drop(columns=['Sex'],axis=1)
+        y = df['Sex']
+
+
+
+        num_features = X.select_dtypes(exclude="object").columns
+        cat_features = X.select_dtypes(include="object").columns
+
+        num_pipeline= Pipeline(
+            steps=[
+            ("imputer",SimpleImputer(strategy="median")),
+            ("scaler",StandardScaler())
+            ]
+        )
+        cat_pipeline=Pipeline(
+            steps=[
+            ("imputer",SimpleImputer(strategy="most_frequent")),
+            ("one_hot_encoder",OneHotEncoder()),
+            ("scaler",StandardScaler(with_mean=False))
+            ]
+        )
+        preprocessor=ColumnTransformer(
+            [
+            ("num_pipeline",num_pipeline,num_features),
+            ("cat_pipelines",cat_pipeline,cat_features)
+            ]
+        )
+
+        X = preprocessor.fit_transform(X)
+
+        if modify_feature:
+            y = y.map({"M": 1, "F": 1, "I": 2 })
         else:
             y = y.map({"M": 0, "F": 1, "I": 2 })
 
         X_sample, _, y_sample, _ = train_test_split(X, y, test_size=ratio, random_state=32)
         X_train, X_test, y_train, y_test = train_test_split(X_sample, y_sample, test_size=0.2, random_state=10) 
         
-        # clf.fit(X_train, y_train)
-        return X_test, y_test,X_train, y_train
+        clf.fit(X_train, y_train)
+        return clf, X_test, y_test,X_train, y_train
 
     def evaluate(self,clf=SVC(kernel='linear'),ratio_range=np.linspace(0.1, 0.9, 4), modify_feature=False):
 

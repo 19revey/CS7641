@@ -17,17 +17,17 @@ class runner:
                                    experiment_name='SA',
                                    seed=1,
                                    iteration_list=2 ** np.arange(12),
-                                   max_attempts=30,
+                                   max_attempts=50,
                                    max_iters=1000,
-                                   temperature_list=[0.1],
+                                   temperature_list=[100],
                                    decay_list=[GeomDecay])
         elif algorithm == 'GA':
             self.runner = GARunner(problem=self.problem,
                                     experiment_name='GA',
                                     seed=1,
                                     iteration_list=2 ** np.arange(12),
-                                    max_attempts=30,
-                                    population_sizes=[100],
+                                    max_attempts=50,
+                                    population_sizes=[10],
                                     mutation_rates=[0.1])
         elif algorithm == 'RHC':
             self.runner = RHCRunner(problem=problem,
@@ -41,8 +41,8 @@ class runner:
                             experiment_name='MIMIC',
                             seed=19,
                             iteration_list=2 ** np.arange(12),
-                            max_attempts=30,
-                            population_sizes=[100],
+                            max_attempts=50,
+                            population_sizes=[10],
                             keep_percent_list=[0.1]
                             )   
     def run(self):
